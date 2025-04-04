@@ -1,0 +1,4 @@
+train: Fire_data/images/train
+val: Fire_data/images/valid
+nc: 1
+names: ['fire']
