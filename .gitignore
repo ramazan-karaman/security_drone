@@ -33,7 +33,7 @@ ENV/
 
 # YOLO specific
 runs/
-*.pt
+#*.pt
 *.engine
 *.wts
 
