@@ -1,20 +1,36 @@
 from ultralytics import YOLO
 import os
 import torch
+import shutil
 
 # GPU kullanılabilirliğini kontrol et
 device = '0' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {'GPU' if device == '0' else 'CPU'}")
+
+# Çalışma dizinini al
+current_dir = os.getcwd()
+print(f"Current working directory: {current_dir}")
+
+# Veri seti klasör yapısını oluştur
+datasets_dir = os.path.join(current_dir, 'datasets')
+if not os.path.exists(datasets_dir):
+    os.makedirs(datasets_dir)
+
+# Fire_data klasörünü datasets altına kopyala
+source_dir = os.path.join(current_dir, 'Fire_data')
+target_dir = os.path.join(datasets_dir, 'Fire_data')
+if not os.path.exists(target_dir):
+    shutil.copytree(source_dir, target_dir)
 
 # YOLOv8 modelini yükle
 model = YOLO('yolov8n.pt')  # Başlangıç modeli olarak YOLOv8n kullanıyoruz
 
 # Eğitim parametreleri
 data_yaml = {
-    'train': 'Fire_data/images/train',  # Eğitim görüntüleri
-    'val': 'Fire_data/images/valid',    # Doğrulama görüntüleri
-    'nc': 1,                            # Sınıf sayısı (fire)
-    'names': ['fire']                   # Sınıf isimleri
+    'train': os.path.join(datasets_dir, 'Fire_data/images/train'),  # Eğitim görüntüleri
+    'val': os.path.join(datasets_dir, 'Fire_data/images/valid'),    # Doğrulama görüntüleri
+    'nc': 1,                                                        # Sınıf sayısı (fire)
+    'names': ['fire']                                               # Sınıf isimleri
 }
 
 # YAML dosyasını oluştur
@@ -60,12 +76,11 @@ results = model.train(
     max_det=300,           # Maksimum tespit sayısı
     half=False,            # Yarı hassasiyet (FP16)
     dnn=False,             # OpenCV DNN kullan
-    evolve=False,          # Hiperparametre evrimi
     multi_scale=False,     # Çoklu ölçek eğitimi
     single_cls=False,      # Tek sınıf eğitimi
     tracker='bytetrack.yaml',  # Nesne takipçisi
     vid_stride=1,          # Video adımı
-    line_thickness=3,      # Çizgi kalınlığı
+    line_width=3,          # Çizgi kalınlığı
     visualize=False,       # Görselleştirme
     augment=True,          # Veri artırma
     degrees=0.0,           # Döndürme derecesi

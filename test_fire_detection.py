@@ -1,9 +1,9 @@
 from ultralytics import YOLO
 import cv2
-import os
 import torch
+import time
 
-def test_model(model_path, image_path, conf_threshold=0.25):
+def live_fire_detection(model_path, conf_threshold=0.25):
     # GPU kullanılabilirliğini kontrol et
     device = '0' if torch.cuda.is_available() else 'cpu'
     print(f"Using device: {'GPU' if device == '0' else 'CPU'}")
@@ -11,34 +11,57 @@ def test_model(model_path, image_path, conf_threshold=0.25):
     # Modeli yükle
     model = YOLO(model_path)
     
-    # Görüntüyü yükle
-    img = cv2.imread(image_path)
-    if img is None:
-        print(f"Görüntü yüklenemedi: {image_path}")
+    # Webcam'i başlat
+    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        print("Webcam açılamadı!")
         return
     
-    # Tahmin yap (GPU kullan)
-    results = model(img, conf=conf_threshold, device=device)
+    # FPS hesaplama için değişkenler
+    start_time = time.time()
+    frame_count = 0
     
-    # Sonuçları görselleştir
-    for r in results:
-        im_array = r.plot()  # Tahmin edilen kutuları çiz
-        cv2.imshow("Fire Detection", im_array)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    print("Yangın tespiti başlatıldı. Çıkmak için 'q' tuşuna basın...")
+    
+    while True:
+        # Webcam'den görüntü al
+        ret, frame = cap.read()
+        if not ret:
+            print("Görüntü alınamadı!")
+            break
         
-        # Tahmin sonuçlarını yazdır
-        print(f"Tespit edilen yangın sayısı: {len(r.boxes)}")
-        for box in r.boxes:
-            print(f"Güven skoru: {box.conf[0]:.2f}")
-            print(f"Kutu koordinatları: {box.xyxy[0]}")
+        # Tahmin yap
+        results = model(frame, conf=conf_threshold, device=device)
+        
+        # Sonuçları görüntüye çiz
+        annotated_frame = results[0].plot()
+        
+        # FPS hesapla ve göster
+        frame_count += 1
+        elapsed_time = time.time() - start_time
+        fps = frame_count / elapsed_time
+        cv2.putText(annotated_frame, f"FPS: {fps:.2f}", (10, 30), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        
+        # Yangın tespit sayısını göster
+        fire_count = len(results[0].boxes)
+        cv2.putText(annotated_frame, f"Yangın Sayısı: {fire_count}", (10, 70), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        
+        # Görüntüyü göster
+        cv2.imshow("Yangın Tespiti", annotated_frame)
+        
+        # 'q' tuşuna basıldığında döngüyü sonlandır
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    
+    # Kaynakları serbest bırak
+    cap.release()
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     # Eğitilmiş model yolu
     model_path = "fire_detection_results/fire_detection/weights/best.pt"
     
-    # Test görüntüsü yolu
-    test_image = "Fire_data/images/test/fire.16.png"
-    
-    # Modeli test et
-    test_model(model_path, test_image) 
+    # Canlı tespit başlat
+    live_fire_detection(model_path) 

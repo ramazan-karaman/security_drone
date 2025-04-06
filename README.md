@@ -2,6 +2,16 @@
 
 Bu proje, YOLOv8 kullanarak yangın tespiti yapan bir derin öğrenme modeli eğitmek ve kullanmak için oluşturulmuştur.
 
+## Özellikler
+
+- YOLOv8n modeli kullanılarak yangın tespiti
+- GPU ve CPU desteği
+- Gerçek zamanlı webcam tespiti
+- FPS göstergesi
+- Yangın tespit edildiğinde görsel uyarı
+- Eğitim ve test scriptleri
+- Google Colab desteği
+
 ## Kurulum
 
 1. Gerekli kütüphaneleri yükleyin:
@@ -22,31 +32,48 @@ Fire_data/
 
 ## Kullanım
 
-1. Model Eğitimi:
+### Eğitim
 ```bash
 python train_fire_detection.py
 ```
 
-2. Test:
+### Test
 ```bash
 python test_fire_detection.py
 ```
 
-3. Gerçek Zamanlı Tespit:
+### Gerçek Zamanlı Tespit
 ```bash
 python detect_fire_realtime.py
 ```
 
-## Özellikler
+### Google Colab Kullanımı
+1. Colab notebook'u açın
+2. Runtime > Change runtime type > GPU seçin
+3. Tüm kodları çalıştırın
 
-- YOLOv8n modeli kullanılarak yangın tespiti
-- CPU üzerinde eğitim ve çıkarım desteği
-- Gerçek zamanlı webcam tespiti
-- FPS göstergesi
-- Yangın tespit edildiğinde görsel uyarı
+## Gereksinimler
 
-## Notlar
+- Python 3.8+
+- PyTorch
+- Ultralytics
+- OpenCV
+- CUDA (GPU için)
 
-- Eğitim CPU üzerinde yapılacaktır, bu nedenle eğitim süresi uzun olabilir
-- Gerçek zamanlı tespit için webcam gereklidir
-- Model eğitimi tamamlandıktan sonra en iyi model `fire_detection_results/fire_detection/weights/best.pt` konumunda kaydedilecektir 
+## Lisans
+
+MIT License
+
+## Katkıda Bulunma
+
+1. Bu repoyu fork edin
+2. Yeni bir branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Değişikliklerinizi commit edin (`git commit -m 'Add some amazing feature'`)
+4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
+5. Pull Request oluşturun
+
+## İletişim
+
+Proje Sahibi - [@yourusername](https://github.com/yourusername)
+
+Proje Linki: [https://github.com/yourusername/fire-detection-yolov8](https://github.com/yourusername/fire-detection-yolov8) 
