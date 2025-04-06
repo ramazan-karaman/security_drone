@@ -2,6 +2,7 @@ from ultralytics import YOLO
 import cv2
 import time
 import os
+import torch
 
 def check_available_cameras():
     """Mevcut kameraları kontrol et"""
@@ -16,12 +17,13 @@ def check_available_cameras():
     return available_cameras
 
 def live_fire_detection(model_path, conf_threshold=0.25):
-    # CPU kullan
-    device = 'cpu'
-    print("Using device: CPU")
+    # GPU kullanılabilirliğini kontrol et
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print(f"Using device: {device.upper()}")
     
     # Modeli yükle
     model = YOLO(model_path)
+    model.to(device)  # Modeli seçilen cihaza taşı
     
     # Mevcut kameraları kontrol et
     available_cameras = check_available_cameras()

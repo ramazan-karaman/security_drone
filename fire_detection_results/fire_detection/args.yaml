@@ -2,16 +2,16 @@ task: detect
 mode: train
 model: yolov8n.pt
 data: fire_data.yaml
-epochs: 10
+epochs: 50
 time: null
 patience: 50
-batch: 8
+batch: 16
 imgsz: 640
 save: true
 save_period: 10
-cache: false
-device: cpu
-workers: 4
+cache: true
+device: cuda
+workers: 8
 project: fire_detection_results
 name: fire_detection
 exist_ok: true
@@ -25,7 +25,7 @@ rect: false
 cos_lr: true
 close_mosaic: 10
 resume: false
-amp: false
+amp: true
 fraction: 1.0
 profile: false
 freeze: null
@@ -40,7 +40,7 @@ save_hybrid: false
 conf: null
 iou: 0.7
 max_det: 300
-half: false
+half: true
 dnn: false
 plots: true
 source: null
@@ -103,4 +103,4 @@ erasing: 0.4
 crop_fraction: 1.0
 cfg: null
 tracker: bytetrack.yaml
-save_dir: fire_detection_results\fire_detection
+save_dir: fire_detection_results/fire_detection

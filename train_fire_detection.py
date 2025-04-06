@@ -1,10 +1,11 @@
 from ultralytics import YOLO
 import os
 import shutil
+import torch
 
-# CPU kullan
-device = 'cpu'
-print("Using device: CPU")
+# GPU kullanılabilirliğini kontrol et
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+print(f"Using device: {device.upper()}")
 
 # Çalışma dizinini al
 current_dir = os.getcwd()
@@ -23,6 +24,7 @@ if not os.path.exists(target_dir):
 
 # YOLOv8 modelini yükle
 model = YOLO('yolov8n.pt')  # Başlangıç modeli olarak YOLOv8n kullanıyoruz
+model.to(device)  # Modeli seçilen cihaza taşı
 
 # Eğitim parametreleri
 data_yaml = {
@@ -42,24 +44,24 @@ with open('fire_data.yaml', 'w') as f:
 # Modeli eğit
 results = model.train(
     data='fire_data.yaml',
-    epochs=10,              # Eğitim epoch sayısı
+    epochs=50,              # Eğitim epoch sayısı
     imgsz=640,              # Görüntü boyutu
-    batch=8,                # CPU için daha küçük batch size
-    device=device,          # CPU kullan
+    batch=16 if device == 'cuda' else 8,  # GPU için daha büyük batch size
+    device=device,          # GPU/CPU kullan
     project='fire_detection_results',  # Sonuçların kaydedileceği klasör
     name='fire_detection',  # Model adı
     patience=50,            # Erken durdurma için sabır değeri
     save=True,             # En iyi modeli kaydet
     save_period=10,        # Her 10 epoch'ta bir modeli kaydet
-    cache=False,           # Görüntüleri önbelleğe alma (CPU için kapalı)
+    cache=True if device == 'cuda' else False,  # GPU için önbelleği etkinleştir
     exist_ok=True,         # Mevcut proje klasörünü kullan
     pretrained=True,       # Önceden eğitilmiş ağırlıkları kullan
     optimizer='auto',      # Optimizer seçimi
     verbose=True,          # Detaylı çıktı
     seed=0,                # Rastgele sayı üreteci için seed
     deterministic=True,    # Deterministik eğitim
-    workers=4,             # Veri yükleme işçi sayısı (CPU için daha az)
-    amp=False,             # Otomatik karışık hassasiyet (CPU için kapalı)
+    workers=8 if device == 'cuda' else 4,  # GPU için daha fazla işçi
+    amp=True if device == 'cuda' else False,  # GPU için otomatik karışık hassasiyet
     cos_lr=True,           # Kosinüs öğrenme oranı zamanlaması
     close_mosaic=10,       # Son 10 epoch'ta mozaik augmentasyonu kapat
     resume=False,          # Önceki eğitimi devam ettir
@@ -73,7 +75,7 @@ results = model.train(
     nms=True,              # NMS kullan
     agnostic_nms=False,    # Sınıf-agnostik NMS
     max_det=300,           # Maksimum tespit sayısı
-    half=False,            # Yarı hassasiyet (FP16)
+    half=True if device == 'cuda' else False,  # GPU için yarı hassasiyet
     dnn=False,             # OpenCV DNN kullan
     multi_scale=False,     # Çoklu ölçek eğitimi
     single_cls=False,      # Tek sınıf eğitimi

@@ -5,11 +5,12 @@ import time
 
 def live_fire_detection(model_path, conf_threshold=0.25):
     # GPU kullanılabilirliğini kontrol et
-    device = '0' if torch.cuda.is_available() else 'cpu'
-    print(f"Using device: {'GPU' if device == '0' else 'CPU'}")
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print(f"Using device: {device.upper()}")
     
     # Modeli yükle
     model = YOLO(model_path)
+    model.to(device)  # Modeli seçilen cihaza taşı
     
     # Webcam'i başlat
     cap = cv2.VideoCapture(0)

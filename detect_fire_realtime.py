@@ -1,14 +1,16 @@
 from ultralytics import YOLO
 import cv2
 import time
+import torch
 
 def detect_fire_realtime(model_path, conf_threshold=0.25):
-    # CPU kullan
-    device = 'cpu'
-    print("Using device: CPU")
+    # GPU kullanılabilirliğini kontrol et
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print(f"Using device: {device.upper()}")
     
     # Modeli yükle
     model = YOLO(model_path)
+    model.to(device)  # Modeli seçilen cihaza taşı
     
     # Webcam'i başlat
     cap = cv2.VideoCapture(0)
@@ -27,7 +29,7 @@ def detect_fire_realtime(model_path, conf_threshold=0.25):
             print("Görüntü alınamadı!")
             break
         
-        # Tahmin yap (CPU kullan)
+        # Tahmin yap (GPU/CPU kullan)
         results = model(frame, conf=conf_threshold, device=device)
         
         # Sonuçları görselleştir
