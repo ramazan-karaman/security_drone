@@ -34,7 +34,6 @@ ENV/
 # YOLO specific
 runs/
 *.pt
-*.onnx
 *.engine
 *.wts
 
