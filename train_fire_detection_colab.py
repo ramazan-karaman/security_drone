@@ -1,6 +1,13 @@
 from ultralytics import YOLO
 import os
 import torch
+from google.colab import drive
+
+# Google Drive'ı bağla
+drive.mount('/content/drive')
+
+# Çalışma dizinini ayarla
+os.chdir('/content/drive/MyDrive/your_project_folder')  # Proje klasörünüzün yolunu buraya yazın
 
 # GPU kullanılabilirliğini kontrol et
 device = '0' if torch.cuda.is_available() else 'cpu'

@@ -1,8 +1,13 @@
 from ultralytics import YOLO
 import cv2
 import os
+import torch
 
 def test_model(model_path, image_path, conf_threshold=0.25):
+    # GPU kullanılabilirliğini kontrol et
+    device = '0' if torch.cuda.is_available() else 'cpu'
+    print(f"Using device: {'GPU' if device == '0' else 'CPU'}")
+    
     # Modeli yükle
     model = YOLO(model_path)
     
@@ -12,8 +17,8 @@ def test_model(model_path, image_path, conf_threshold=0.25):
         print(f"Görüntü yüklenemedi: {image_path}")
         return
     
-    # Tahmin yap
-    results = model(img, conf=conf_threshold)
+    # Tahmin yap (GPU kullan)
+    results = model(img, conf=conf_threshold, device=device)
     
     # Sonuçları görselleştir
     for r in results:
