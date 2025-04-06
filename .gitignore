@@ -38,12 +38,7 @@ runs/
 *.engine
 *.wts
 
-# Dataset
-Fire_data/
-*.jpg
-*.jpeg
-*.png
-*.txt
+
 
 # Logs
 *.log
