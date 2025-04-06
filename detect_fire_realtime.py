@@ -1,12 +1,11 @@
 from ultralytics import YOLO
 import cv2
 import time
-import torch
 
 def detect_fire_realtime(model_path, conf_threshold=0.25):
-    # GPU kullanılabilirliğini kontrol et
-    device = '0' if torch.cuda.is_available() else 'cpu'
-    print(f"Using device: {'GPU' if device == '0' else 'CPU'}")
+    # CPU kullan
+    device = 'cpu'
+    print("Using device: CPU")
     
     # Modeli yükle
     model = YOLO(model_path)
@@ -21,9 +20,6 @@ def detect_fire_realtime(model_path, conf_threshold=0.25):
     prev_time = 0
     fps = 0
     
-    # GPU bellek optimizasyonu için
-    torch.backends.cudnn.benchmark = True
-    
     while True:
         # Görüntüyü al
         ret, frame = cap.read()
@@ -31,7 +27,7 @@ def detect_fire_realtime(model_path, conf_threshold=0.25):
             print("Görüntü alınamadı!")
             break
         
-        # Tahmin yap (GPU kullan)
+        # Tahmin yap (CPU kullan)
         results = model(frame, conf=conf_threshold, device=device)
         
         # Sonuçları görselleştir

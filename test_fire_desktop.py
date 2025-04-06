@@ -1,6 +1,5 @@
 from ultralytics import YOLO
 import cv2
-import torch
 import time
 import os
 
@@ -17,9 +16,9 @@ def check_available_cameras():
     return available_cameras
 
 def live_fire_detection(model_path, conf_threshold=0.25):
-    # GPU kullanılabilirliğini kontrol et
-    device = '0' if torch.cuda.is_available() else 'cpu'
-    print(f"Using device: {'GPU' if device == '0' else 'CPU'}")
+    # CPU kullan
+    device = 'cpu'
+    print("Using device: CPU")
     
     # Modeli yükle
     model = YOLO(model_path)

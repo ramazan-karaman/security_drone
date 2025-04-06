@@ -1,11 +1,10 @@
 from ultralytics import YOLO
 import os
-import torch
 import shutil
 
-# GPU kullanılabilirliğini kontrol et
-device = '0' if torch.cuda.is_available() else 'cpu'
-print(f"Using device: {'GPU' if device == '0' else 'CPU'}")
+# CPU kullan
+device = 'cpu'
+print("Using device: CPU")
 
 # Çalışma dizinini al
 current_dir = os.getcwd()
@@ -43,24 +42,24 @@ with open('fire_data.yaml', 'w') as f:
 # Modeli eğit
 results = model.train(
     data='fire_data.yaml',
-    epochs=100,              # Eğitim epoch sayısı
+    epochs=10,              # Eğitim epoch sayısı
     imgsz=640,              # Görüntü boyutu
-    batch=32,               # GPU için daha büyük batch size
-    device=device,          # GPU kullan
+    batch=8,                # CPU için daha küçük batch size
+    device=device,          # CPU kullan
     project='fire_detection_results',  # Sonuçların kaydedileceği klasör
     name='fire_detection',  # Model adı
     patience=50,            # Erken durdurma için sabır değeri
     save=True,             # En iyi modeli kaydet
     save_period=10,        # Her 10 epoch'ta bir modeli kaydet
-    cache=True,            # Görüntüleri önbelleğe alma (GPU için)
+    cache=False,           # Görüntüleri önbelleğe alma (CPU için kapalı)
     exist_ok=True,         # Mevcut proje klasörünü kullan
     pretrained=True,       # Önceden eğitilmiş ağırlıkları kullan
     optimizer='auto',      # Optimizer seçimi
     verbose=True,          # Detaylı çıktı
     seed=0,                # Rastgele sayı üreteci için seed
     deterministic=True,    # Deterministik eğitim
-    workers=8,             # Veri yükleme işçi sayısı
-    amp=True,              # Otomatik karışık hassasiyet (GPU için)
+    workers=4,             # Veri yükleme işçi sayısı (CPU için daha az)
+    amp=False,             # Otomatik karışık hassasiyet (CPU için kapalı)
     cos_lr=True,           # Kosinüs öğrenme oranı zamanlaması
     close_mosaic=10,       # Son 10 epoch'ta mozaik augmentasyonu kapat
     resume=False,          # Önceki eğitimi devam ettir
